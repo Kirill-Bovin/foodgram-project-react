@@ -222,12 +222,12 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
             recipe.tags.set(tags_data)
         return super().update(recipe, validated_data)
 
-    def to_representation(self, instance):
-        return RecipeSerializer(instance,
-                                context={
-                                        'request': self.context.get('request')
-                                        }
-                                ).data
+    def show_recipe(self, instance):
+        return RecipeSerializer(
+            instance,
+            context={
+                'request': self.context.get('request')
+            }).data
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
@@ -247,9 +247,9 @@ class FavoriteSerializer(serializers.ModelSerializer):
         fields = ('user', 'recipe')
         validators = [
             UniqueTogetherValidator(
-                    queryset=Favorite.objects.all(),
-                    fields=('user', 'recipe'),
-                    message='Рецепт уже добавлен в избранное'
+                queryset=Favorite.objects.all(),
+                fields=('user', 'recipe'),
+                message='Рецепт уже добавлен в избранное'
             )
         ]
 
