@@ -17,14 +17,12 @@ class UsersSerializer(UserSerializer):
 
     class Meta:
         model = User
-        fields = (
-                 'id',
-                 'username',
-                 'email',
-                 'first_name',
-                 'last_name',
-                 'is_subscribed',
-                 )
+        fields = ('id',
+                  'username',
+                  'email',
+                  'first_name',
+                  'last_name',
+                  'is_subscribed',)
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
@@ -90,8 +88,7 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = (
-                  'id',
+        fields = ('id',
                   'tags',
                   'author',
                   'ingredients',
@@ -100,18 +97,16 @@ class RecipeSerializer(serializers.ModelSerializer):
                   'name',
                   'image',
                   'text',
-                  'cooking_time',
-                 )
+                  'cooking_time',)
 
     def get_ingredients(self, obj):
         queryset = IngredientRecipe.objects.filter(recipe=obj)
         return RecipeIngredientSerializer(queryset, many=True).data
 
     def get_is_favorited(self, obj):
-        if (self.context.get('request')
-           and self.context['request'].user.is_authenticated):
-            return Favorite.objects.filter(
-                                           user=self.context['request'].user,
+        if (self.context.get('request') and
+            self.context['request'].user.is_authenticated):
+            return Favorite.objects.filter(user=self.context['request'].user,
                                            recipe=obj).exists()
         return False
 
@@ -142,16 +137,14 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = (
-                  'id',
+        fields = ('id',
                   'author',
                   'tags',
                   'ingredients',
                   'name',
                   'image',
                   'text',
-                  'cooking_time',
-                  )
+                  'cooking_time',)
 
     def validate_tags(self, tags):
         tags_list = []

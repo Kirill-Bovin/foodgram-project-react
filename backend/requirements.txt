@@ -9,6 +9,6 @@ python-decouple==3.5
 drf-extra-fields==3.4.1
 Pillow==9.5.0
 isort==5.11.5
-flake8==6.0.0
+flake8==6.1.0
 python-dotenv==1.0.0
 
