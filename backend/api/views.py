@@ -50,8 +50,8 @@ class UsersViewSet(UserViewSet):
                             status=status.HTTP_204_NO_CONTENT)
 
     @action(
-            detail=False,
-            permission_classes=(IsAuthenticated,)
+        detail=False,
+        permission_classes=(IsAuthenticated,)
     )
     def subscriptions(self, request):
         serializer = FollowSerializer(
@@ -94,17 +94,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_400_BAD_REQUEST)
 
     def recipe_delete(self, model, request, pk):
-        get_object_or_404(
-                        model,
-                        user=request.user,
-                        recipe=get_object_or_404(Recipe, pk=pk)).delete()
+        get_object_or_404(model,
+                          user=request.user,
+                          recipe=get_object_or_404(Recipe, pk=pk)).delete()
         return Response({'detail': 'Рецепт удален.'},
                         status=status.HTTP_204_NO_CONTENT)
 
     @action(
-            detail=True,
-            methods=['POST', 'DELETE'],
-            permission_classes=(IsAuthenticated,)
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=(IsAuthenticated,)
     )
     def favorite(self, request, pk):
         if request.method == 'POST':
@@ -112,9 +111,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return self.recipe_delete(Favorite, request, pk)
 
     @action(
-            detail=True,
-            methods=['POST', 'DELETE'],
-            permission_classes=(IsAuthenticated,)
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=(IsAuthenticated,)
     )
     def shopping_cart(self, request, pk=None):
         get_object_or_404(
