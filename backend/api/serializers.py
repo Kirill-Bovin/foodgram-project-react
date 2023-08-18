@@ -77,11 +77,8 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     author = UsersSerializer(read_only=True)
     tags = TagSerializer(many=True, read_only=True)
-    ingredients = RecipeIngredientSerializer(
-                                             many=True,
-                                             required=True,
-                                             source='recipe'
-                                            )
+    ingredients = RecipeIngredientSerializer(many=True, required=True,
+                                             source='recipe')
     image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField(read_only=True)
     is_in_shopping_cart = serializers.SerializerMethodField(read_only=True)
@@ -104,8 +101,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         return RecipeIngredientSerializer(queryset, many=True).data
 
     def get_is_favorited(self, obj):
-        if (self.context.get('request') and
-            self.context['request'].user.is_authenticated):
+        if (self.context.get('request')
+           and self.context['request'].user.is_authenticated):
             return Favorite.objects.filter(user=self.context['request'].user,
                                            recipe=obj).exists()
         return False
