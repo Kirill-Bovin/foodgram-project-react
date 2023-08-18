@@ -30,19 +30,17 @@ class UsersViewSet(UserViewSet):
     pagination_class = PageFieldPagination
 
     @action(
-            detail=True,
-            methods=['POST', 'DELETE'],
-            permission_classes=(IsAuthenticated,)
-            )
-    def subscribe(self, request, id):
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=(IsAuthenticated,)
+    )
+    def subscribes(self, request, id):
         user = request.user
         author = get_object_or_404(User, pk=id)
         if request.method == 'POST':
-            serializer = FollowSerializer(
-                                          author,
+            serializer = FollowSerializer(author,
                                           data=request.data,
-                                          context={'request': request}
-                                          )
+                                          context={'request': request})
             serializer.is_valid(raise_exception=True)
             Follow.objects.create(user=user, author=author)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
