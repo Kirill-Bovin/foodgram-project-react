@@ -2,12 +2,12 @@ from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
+from rest_framework.validators import UniqueTogetherValidator
 
 from app.models import Favorite, Follow, ShoppingCart
 from ingredient.models import Ingredient
 from recipe.models import IngredientRecipe, Recipe, Tag
 from users.models import User
-from rest_framework.fields import SerializerMethodField
 
 
 class UsersSerializer(UserSerializer):
@@ -143,15 +143,6 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
                   'image',
                   'text',
                   'cooking_time',)
-        
-    def create_recipe(self, validated_data):
-        ingredients = validated_data.pop('ingredients')
-        request = self.context.get('request', None)
-        tags = validated_data.pop('tags')
-        recipe = Recipe.objects.create(author=request.user, **validated_data)
-        self.create_tags(tags, recipe)
-        self.create_ingredient_amount(ingredients, recipe)
-        return recipe
 
     def validate_tags(self, tags):
         tags_list = []
@@ -212,6 +203,15 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         for tag in tags:
             recipe.tags.add(tag)
 
+    def create_recipe(self, validated_data):
+        ingredients = validated_data.pop('ingredients')
+        request = self.context.get('request', None)
+        tags = validated_data.pop('tags')
+        recipe = Recipe.objects.create(author=request.user, **validated_data)
+        self.create_tags(tags, recipe)
+        self.create_ingredient_amount(ingredients, recipe)
+        return recipe
+
     def update_recipe(self, recipe, validated_data):
         if 'ingredients' in validated_data:
             ingredients = validated_data.pop('ingredients')
@@ -223,11 +223,11 @@ class CreateRecipeSerializer(serializers.ModelSerializer):
         return super().update(recipe, validated_data)
 
     def to_representation(self, instance):
-        return RecipeSerializer(
-            instance,
-            context={
-                'request': self.context.get('request')
-            }).data
+        return RecipeSerializer(instance,
+                                context={
+                                        'request': self.context.get('request')
+                                        }
+                                ).data
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
@@ -245,6 +245,13 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
         fields = ('user', 'recipe')
+        validators = [
+            UniqueTogetherValidator(
+                    queryset=Favorite.objects.all(),
+                    fields=('user', 'recipe'),
+                    message='Рецепт уже добавлен в избранное'
+            )
+        ]
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
@@ -262,6 +269,13 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShoppingCart
         fields = ('user', 'recipe')
+        validators = [
+            UniqueTogetherValidator(
+                queryset=ShoppingCart.objects.all(),
+                fields=('user', 'recipe'),
+                message='Рецепт уже есть в списке покупок'
+            )
+        ]
 
 
 class RecipeInfoSerializer(serializers.ModelSerializer):
@@ -269,7 +283,7 @@ class RecipeInfoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ('id', 'name', 'image', 'cooking_time')        
+        fields = ('id', 'name', 'image', 'cooking_time')
 
 
 class FollowSerializer(UsersSerializer):
@@ -295,3 +309,6 @@ class FollowSerializer(UsersSerializer):
 
     def get_recipes_count(self, obj):
         return Recipe.objects.filter(author=obj).count()
+
+
+
