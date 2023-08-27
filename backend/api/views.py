@@ -6,7 +6,7 @@ from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticated,
-                                        IsAuthenticatedOrReadOnly)
+                                        IsAuthenticatedOrReadOnly, AllowAny)
 from rest_framework.response import Response
 
 from api.filters import IngredientFilter, RecipesFilter
@@ -22,36 +22,60 @@ from users.models import User
 from .pagination import PageFieldPagination
 
 
+class TagViewSet(viewsets.ModelViewSet):
+    """Вьюсет для тегов."""
+
+    queryset = Tag.objects.all()
+    serializer_class = TagSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+    pagination_class = None
+
+
+class IngredientViewSet(viewsets.ModelViewSet):
+    """Вьюсет для ингредиентов."""
+
+    queryset = Ingredient.objects.all()
+    serializer_class = IngredientSerializer
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+    pagination_class = None
+    filter_backends = (IngredientFilter, )
+    search_fields = ('^name', )
+
+
 class UsersViewSet(UserViewSet):
     """Вьюсет для пользователей и подписок. """
 
     queryset = User.objects.all()
     serializer_class = UsersSerializer
-    pagination_class = PageFieldPagination
+    permission_classes = [AllowAny]
 
     @action(
-        detail=True,
-        methods=['POST', 'DELETE'],
-        permission_classes=(IsAuthenticated,)
+            detail=True,
+            methods=['POST', 'DELETE'],
+            permission_classes=[IsAuthenticated]
     )
-    def subscribes(self, request, id):
+    def subscribe(self, request, **kwargs):
         user = request.user
-        author = get_object_or_404(User, pk=id)
+        author_id = self.kwargs.get('id')
+        author = get_object_or_404(User, id=author_id)
         if request.method == 'POST':
             serializer = FollowSerializer(author,
                                           data=request.data,
                                           context={'request': request})
             serializer.is_valid(raise_exception=True)
             Follow.objects.create(user=user, author=author)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
         if request.method == 'DELETE':
             get_object_or_404(Follow, user=user, author=author).delete()
-            return Response({'detail': 'Вы отписались'},
+            return Response({'detail': 'Вы успешно отписались'},
                             status=status.HTTP_204_NO_CONTENT)
 
     @action(
-        detail=False,
-        permission_classes=(IsAuthenticated,)
+            detail=False,
+            permission_classes=[IsAuthenticated]
     )
     def subscriptions(self, request):
         serializer = FollowSerializer(
@@ -105,10 +129,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=['POST', 'DELETE'],
         permission_classes=(IsAuthenticated,)
     )
-    def favorite(self, request, pk):
+    def favorite(self, request, id):
         if request.method == 'POST':
-            return self.recipe_add(Favorite, request, pk)
-        return self.recipe_delete(Favorite, request, pk)
+            return self.recipe_add(Favorite, request, id)
+        return self.recipe_delete(Favorite, request, id)
 
     @action(
         detail=True,
@@ -147,23 +171,3 @@ class RecipeViewSet(viewsets.ModelViewSet):
         request = HttpResponse(content, content_type='text/plain')
         request['Content-Disposition'] = f'attachment; filename={filename}'
         return request
-
-
-class TagViewSet(viewsets.ModelViewSet):
-    """Вьюсет для тегов."""
-
-    queryset = Tag.objects.all()
-    serializer_class = TagSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
-    pagination_class = None
-
-
-class IngredientViewSet(viewsets.ModelViewSet):
-    """Вьюсет для ингредиентов."""
-
-    queryset = Ingredient.objects.all()
-    serializer_class = IngredientSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly, )
-    pagination_class = None
-    filter_backends = (IngredientFilter, )
-    search_fields = ('^name', )

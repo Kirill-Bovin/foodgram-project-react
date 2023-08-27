@@ -1,38 +1,42 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models.constraints import UniqueConstraint
-
-from .validators import validate_username
 
 
 class User(AbstractUser):
-    username = models.CharField(
-        'Имя пользователя',
+    """Модель Пользователя."""
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ('username', 'first_name', 'last_name',)
+
+    username = models.SlugField(
         max_length=150,
         unique=True,
-        validators=(validate_username, ),
-    )
+        verbose_name='Логин',
+        )
     email = models.EmailField(
-        verbose_name='Электронная почта',
         max_length=254,
         unique=True,
+        verbose_name='Почта'
     )
-    first_name = models.TextField(
+    first_name = models.CharField(
         max_length=150,
-        blank=True
+        blank=False,
+        verbose_name='Имя'
     )
-    last_name = models.TextField(
+    last_name = models.CharField(
         max_length=150,
-        blank=True
+        blank=False,
+        verbose_name='Фамилия'
+    )
+    password = models.CharField(
+        max_length=100,
+        verbose_name='Пароль'
     )
 
     class Meta:
+        ordering = ['username']
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
-        constraints = [
-            UniqueConstraint(fields=('username', 'email'),
-                             name='unique_user')
-        ]
 
     def __str__(self):
         return self.username

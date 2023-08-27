@@ -7,11 +7,11 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY', default='secret_key')
+SECRET_KEY = 'django-insecure-39@$5whzga44brdd7y!^2g%(xx0l$epop6jpumhnrunttb!5=$'
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['84.201.165.14', '127.0.0.1', 'localhost', 'foodgram9669.hopto.org']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -63,8 +63,12 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB', 'django'),
+        'USER': os.getenv('POSTGRES_USER', 'django'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
+        'HOST': os.getenv('DB_HOST', ''),
+        'PORT': os.getenv('DB_PORT', 5432)
     }
 }
 
@@ -85,7 +89,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = 'users.User'
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
@@ -119,9 +123,9 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
-    'SERIALIZERS': {
-        'user': 'api.serializers.UsersSerializer',
-        'current_user': 'api.serializers.UsersSerializer',
-    },
     'HIDE_USERS': False,
+    'SERIALIZERS': {
+        "user": "api.serializers.UsersSerializer",
+        "current_user": "api.serializers.UsersSerializer",
+    },
 }
