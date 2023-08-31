@@ -28,9 +28,9 @@ class UsersViewSet(UserViewSet):
     permission_classes = [AllowAny]
 
     @action(
-            detail=True,
-            methods=['POST', 'DELETE'],
-            permission_classes=[IsAuthenticated]
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=[IsAuthenticated]
     )
     def subscribe(self, request, **kwargs):
         user = request.user
@@ -51,10 +51,9 @@ class UsersViewSet(UserViewSet):
             return Response({'detail': 'Вы успешно отписались'},
                             status=status.HTTP_204_NO_CONTENT)
 
-    @action(
-            detail=False,
+    @action(detail=False,
             permission_classes=[IsAuthenticated]
-    )
+            )
     def subscriptions(self, request):
         serializer = FollowSerializer(
             self.paginate_queryset(
@@ -102,9 +101,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         status=status.HTTP_204_NO_CONTENT)
 
     @action(
-            detail=True,
-            methods=['POST', 'DELETE'],
-            permission_classes=[IsAuthenticated]
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=[IsAuthenticated]
     )
     def favorite(self, request, pk):
         if request.method == 'POST':
@@ -112,9 +111,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return self.recipe_delete(Favorite, request, pk)
 
     @action(
-            detail=True,
-            methods=['POST', 'DELETE'],
-            permission_classes=[IsAuthenticated]
+        detail=True,
+        methods=['POST', 'DELETE'],
+        permission_classes=[IsAuthenticated]
     )
     def shopping_cart(self, request, pk=None):
         if request.method == 'POST':
