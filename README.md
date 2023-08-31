@@ -60,6 +60,10 @@ sudo docker compose -f docker-compose.production.yml exec backend python manage.
 ```
 sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --noinput
 ```
+Загрузите ингрдиенты:
+```
+sudo docker compose exec backend python manage.py load_to_base
+```
 Данные сайта:
 ```
 Доменное имя: foodgram9669.hopto.org
