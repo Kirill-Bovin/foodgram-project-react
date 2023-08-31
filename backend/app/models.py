@@ -34,12 +34,12 @@ class Favorite(models.Model):
 
 
 class ShoppingCart(models.Model):
-    """Модель списка корзины."""
+    """Модель корзины."""
 
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='Добавили в корзину',
+        verbose_name='Добавил в корзину',
         related_name='shopping_cart',
     )
     recipe = models.ForeignKey(

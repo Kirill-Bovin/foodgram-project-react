@@ -1,16 +1,16 @@
 version: '3'
 
 volumes:
-  pg_data1:
+  pg_data2:
   static:
   media:
 
 services:
-  db3:
+  db4:
     image: postgres:13
     restart: always
     volumes:
-      - pg_data1:/var/lib/postgresql/data
+      - pg_data2:/var/lib/postgresql/data
     env_file:
       - ./.env  
   backend:
@@ -19,7 +19,7 @@ services:
     env_file:
       - ./.env
     depends_on:
-      - db3
+      - db4
     volumes:
       - static:/app/static/
       - media:/app/media/

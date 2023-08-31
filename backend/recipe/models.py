@@ -72,7 +72,12 @@ class Recipe(models.Model):
         verbose_name='Тег',
     )
     cooking_time = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(720)],
+        validators=[
+            MinValueValidator(
+                1, message='Минимальное время готовки не менее 1 минуты!'),
+            MaxValueValidator(
+                720, message='Максимальное время готовки не более 720 минут!')
+        ],
         verbose_name='Время приготовления в минутах',
     )
     pub_date = models.DateTimeField(
@@ -103,8 +108,13 @@ class IngredientRecipe(models.Model):
         related_name='recipe',
     )
     amount = models.PositiveIntegerField(
-        verbose_name='Количество',
-        validators=[MinValueValidator(1), ],
+        verbose_name='Количество ингридиентов',
+        validators=[
+            MinValueValidator(
+                1, message='Ингридиентов должно быть не менее 1!'),
+            MaxValueValidator(
+                2000, message='ингридиентов должно быть не более 2000!')
+        ]
     )
 
     class Meta:

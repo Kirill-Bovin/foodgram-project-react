@@ -7,11 +7,11 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-39@$5whzga44brdd7y!^2g%(xx0l$epop6jpumhnrunttb!5=$'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = False
+DEBUG = os.getenv('DEBUG', False) == 'True'
 
-ALLOWED_HOSTS = ['84.201.165.14', '127.0.0.1', 'localhost', 'foodgram9669.hopto.org']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -123,7 +123,6 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
-    'HIDE_USERS': False,
     'SERIALIZERS': {
         "user": "api.serializers.UsersSerializer",
         "current_user": "api.serializers.UsersSerializer",

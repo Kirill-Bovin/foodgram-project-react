@@ -8,7 +8,7 @@ from .models import IngredientRecipe, Recipe, Tag
 @admin.register(Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'author', 'in_favorites', )
-    list_filter = ('name', 'author', 'tags', )
+    list_filter = ('name', 'author', 'tags', 'recipe',)
     search_fields = ('name', )
     empty_value_display = '-пусто-'
 
